@@ -10,6 +10,24 @@ Chunk-based file transfer between MCP servers. Zero LLM context bloat.
 npm install mcp-fte
 ```
 
+## CLI
+
+The `mcp-fte` command tests file transfers against any MCP server. See [docs/cli.md](docs/cli.md) for full usage.
+
+```bash
+# From source
+node dist/cli.js probe --transport stdio --command "npx tsx examples/fte-server.ts"
+
+# After npm install
+mcp-fte probe --transport http --url http://localhost:3001/mcp
+
+# Pull / push
+mcp-fte pull file:///data/report.pdf --transport stdio --command "node server.js" -o ./report.pdf
+mcp-fte push ./data.csv file:///incoming/data.csv --transport http --url http://localhost:3001/mcp --force
+```
+
+Transports: `stdio` (spawn child process), `http` (StreamableHTTP), `reverse` (coming soon).
+
 ## Client (Host Side)
 
 Use `Fte` in any MCP host application that connects to multiple servers.

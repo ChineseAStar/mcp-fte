@@ -92,9 +92,9 @@ export const FteErrorCodes = {
 // ── Orchestrator types ──
 
 export interface TransferArgs {
-    source_mcp: string;
+    source_server_id: string;
     source_uri: string;
-    target_mcp: string;
+    target_server_id: string;
     target_uri: string;
     /** Allow overwriting if target already exists. Default false. */
     force?: boolean;

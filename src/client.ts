@@ -80,13 +80,13 @@ export class Fte {
             inputSchema: {
                 type: "object",
                 properties: {
-                    source_mcp: { type: "string", description: "Source server: " + ids.join(", "), enum: ids },
+                    source_server_id: { type: "string", description: "Source server: " + ids.join(", "), enum: ids },
                     source_uri: { type: "string", description: "Source URI (e.g. file:///data/app.apk)" },
-                    target_mcp: { type: "string", description: "Target server: " + ids.join(", "), enum: ids },
+                    target_server_id: { type: "string", description: "Target server: " + ids.join(", "), enum: ids },
                     target_uri: { type: "string", description: "Target URI (e.g. file:///workspace/app.apk)" },
                     force: { type: "boolean", description: "Overwrite target if it exists. Default false." },
                 },
-                required: ["source_mcp", "source_uri", "target_mcp", "target_uri"],
+                required: ["source_server_id", "source_uri", "target_server_id", "target_uri"],
             },
         };
     }
@@ -104,14 +104,14 @@ export class Fte {
      * clean result string for the LLM.
      */
     async transfer(args: TransferArgs): Promise<TransferResult> {
-        const src = this.clients.get(args.source_mcp);
-        const tgt = this.clients.get(args.target_mcp);
-        if (!src) return { success: false, message: `Source not found: ${args.source_mcp}` };
-        if (!tgt) return { success: false, message: `Target not found: ${args.target_mcp}` };
+        const src = this.clients.get(args.source_server_id);
+        const tgt = this.clients.get(args.target_server_id);
+        if (!src) return { success: false, message: `Source not found: ${args.source_server_id}` };
+        if (!tgt) return { success: false, message: `Target not found: ${args.target_server_id}` };
 
         const t0 = Date.now();
         try {
-            this.logger.info(`${args.source_mcp}:${args.source_uri} → ${args.target_mcp}:${args.target_uri}`);
+            this.logger.info(`${args.source_server_id}:${args.source_uri} → ${args.target_server_id}:${args.target_uri}`);
 
             // 1. read/init
             const ri = await this.rpc(src.client, Methods.READ_INIT, { uri: args.source_uri });
