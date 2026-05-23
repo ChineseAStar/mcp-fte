@@ -1,6 +1,6 @@
 {
     "name": "mcp-fte",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "MCP File Transfer Extension — chunk-based file transfers between MCP servers. TypeScript client orchestrator + server extension.",
     "type": "module",
     "main": "dist/index.js",
