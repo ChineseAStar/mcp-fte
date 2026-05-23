@@ -15,7 +15,7 @@ npm install -g mcp-fte
 mcp-fte probe --transport http --url http://localhost:3001/mcp
 
 # After npm publish (one-shot)
-npx mcp-mcp-fte probe --transport http --url http://localhost:3001/mcp
+npx mcp-fte probe --transport http --url http://localhost:3001/mcp
 ```
 
 ## Commands
@@ -56,7 +56,7 @@ mcp-fte push <local-file> <target-uri> --transport stdio --command "node server.
 | Transport | Required Flag | Description |
 |-----------|--------------|-------------|
 | `stdio` | `--command` | Spawn a child process, communicate via stdin/stdout |
-| `http` | `--url` | Connect to a StreamableHTTP endpoint (e.g. `http://host:3001/mcp`) |
+| `http` | `--url` | Connect to a StreamableHTTP endpoint. Requires a server supporting GET (SSE) + POST /mcp with session persistence. |
 | `reverse` | *(coming soon)* | Connect through mcp-reverse gateway |
 
 ## Options

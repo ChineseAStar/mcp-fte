@@ -26,7 +26,7 @@ mcp-fte pull file:///data/report.pdf --transport stdio --command "node server.js
 mcp-fte push ./data.csv file:///incoming/data.csv --transport http --url http://localhost:3001/mcp --force
 ```
 
-Transports: `stdio` (spawn child process), `http` (StreamableHTTP), `reverse` (coming soon).
+Transports: `stdio` (spawn child process), `http` (StreamableHTTP, requires GET+SSE server), `reverse` (coming soon).
 
 ## Client (Host Side)
 

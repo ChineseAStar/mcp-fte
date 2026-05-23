@@ -23,6 +23,7 @@ import type { FteCapabilities, ReadInitResponse, ReadChunkResponse, WriteInitRes
 
 // ─── Constants ─────────────────────────────────────────────────────────
 const DEFAULT_CHUNK_SIZE = 1024 * 1024; // 1 MiB
+const CONNECT_TIMEOUT_MS = 15_000;
 const FTE_ERROR_MESSAGES: Record<number, string> = {
     [-32000]: "TRANSFER_NOT_FOUND — The transfer session does not exist or has expired",
     [-32001]: "URI_NOT_ALLOWED — The URI scheme or path is not permitted",
@@ -64,7 +65,14 @@ Push options:
 
 Common options:
   --chunk-size <bytes>  Chunk size in bytes (default: 1048576)
+  --timeout <seconds>   Connection timeout (default: 15s)
   --help, -h            Show this help message
+
+Notes:
+  - HTTP transport requires a StreamableHTTP server (GET /mcp for SSE +
+    POST /mcp for messages) that maintains sessions across requests.
+  - reverse transport depends on mcp-reverse and is not yet implemented in
+    this CLI.
 
 Examples:
   # stdio — spawn a child process
@@ -196,9 +204,11 @@ function createTransport(args: ParsedArgs) {
 // ─── FTE RPC Helper ────────────────────────────────────────────────────
 
 function unwrapMeta(raw: Record<string, unknown>): Record<string, unknown> {
-    if (raw._meta && typeof raw._meta === "object" && raw._meta !== null) {
-        const { _meta, ...rest } = raw;
-        return rest;
+    if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+        const k = Object.keys(raw);
+        if (k.length === 1 && k[0] === "_meta") {
+            return raw._meta as Record<string, unknown>;
+        }
     }
     return raw;
 }
@@ -382,8 +392,32 @@ async function main(): Promise<void> {
         { capabilities: {} },
     );
 
+    const connectionTimeout = setTimeout(() => {
+        // Just a dummy timer that we will clear, but we need to keep its reference
+    }, CONNECT_TIMEOUT_MS);
+    clearTimeout(connectionTimeout);
+
     try {
-        await client.connect(transport);
+        let isConnected = false;
+        await Promise.race([
+            client.connect(transport).then(() => { isConnected = true; }),
+            new Promise<void>((_, reject) => {
+                const timer = setTimeout(() => {
+                    if (!isConnected) {
+                        reject(new CLIError(
+                            `Connection timed out after ${CONNECT_TIMEOUT_MS / 1000}s.\n` +
+                            (args.transport === "http"
+                                ? "  HTTP transport requires a StreamableHTTP-compatible server.\n" +
+                                  "  The server must handle GET /mcp (SSE stream) + POST /mcp (messages).\n" +
+                                  "  If your server is a simple POST-only handler, use --transport reverse instead."
+                                : "  Check that the server is running and reachable.")
+                        ));
+                    }
+                }, CONNECT_TIMEOUT_MS);
+                // Make sure to unref the timer so it doesn't block process exit
+                timer.unref();
+            }),
+        ]);
         console.log("   Connected.");
 
         const serverInfo = client.getServerVersion();
