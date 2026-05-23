@@ -1,0 +1,54 @@
+{
+    "name": "mcp-fte",
+    "version": "1.0.0",
+    "description": "MCP File Transfer Extension — chunk-based file transfers between MCP servers. TypeScript client orchestrator + server extension.",
+    "type": "module",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        }
+    },
+    "files": [
+        "dist/",
+        "README.md",
+        "LICENSE"
+    ],
+    "scripts": {
+        "clean": "rm -rf dist",
+        "build": "tsc -p tsconfig.build.json",
+        "typecheck": "tsc --noEmit",
+        "test": "node --test --import tsx tests/**/*.test.ts",
+        "prepublishOnly": "npm run clean && npm run build && npm test"
+    },
+    "keywords": [
+        "mcp",
+        "model-context-protocol",
+        "file-transfer",
+        "mcp-server",
+        "mcp-client"
+    ],
+    "license": "MIT",
+    "homepage": "https://github.com/ChineseAStar/mcp-fte#readme",
+    "bugs": {
+        "url": "https://github.com/ChineseAStar/mcp-fte/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ChineseAStar/mcp-fte"
+    },
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.26.0",
+        "zod": "^3.24.3"
+    },
+    "peerDependencies": {
+        "@modelcontextprotocol/sdk": "^1.26.0"
+    },
+    "devDependencies": {
+        "@types/node": "^22.19.19",
+        "tsx": "^4.22.3",
+        "typescript": "^5.9.3"
+    }
+}

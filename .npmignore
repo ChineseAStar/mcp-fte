@@ -1,0 +1,10 @@
+.git
+.github
+tests
+src
+node_modules
+*.test.ts
+*.log
+examples
+tsconfig.json
+tsconfig.build.json
